@@ -11,6 +11,10 @@ import java.util.concurrent.ConcurrentHashMap
 class Quiz(val title: String, val text: String, val options: List<String>) {
 }
 
+class QuizResponse(val success: Boolean, val feedback: String) {
+}
+
+
 
 @SpringBootApplication
 @RestController
@@ -19,6 +23,9 @@ class WebQuizEngineApplication {
 	val title = "The Java Logo"
 	val text = "What is depicted on the Java logo?"
 	val options: List<String> = listOf("Robot", "Tea leaf", "Cup of coffee", "Bug")
+
+	val positiveFeedback = QuizResponse(true, "Congratulations, you're right!")
+	val negativeFeedback = QuizResponse(false, "Wrong answer! Please, try again.")
 
 	val quizzes = listOf(
 		Quiz(title, text, options)
@@ -30,11 +37,11 @@ class WebQuizEngineApplication {
 	}
 
 	@PostMapping("/api/quiz")
-	fun postQuiz(@RequestParam answer: Int): String {
+	fun postQuiz(@RequestParam answer: Int): ResponseEntity<QuizResponse> {
 		return if (answer == 2) {
-			"{\"success\":true,\"feedback\":\"Congratulations, you're right!\"}"
+			ResponseEntity.ok(positiveFeedback)
 		} else {
-			"{\"success\":false,\"feedback\":\"Wrong answer! Please, try again.\"}"
+			ResponseEntity.ok(negativeFeedback)
 		}
 	}
 }
